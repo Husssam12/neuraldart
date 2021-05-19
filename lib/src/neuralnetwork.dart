@@ -44,21 +44,21 @@ void backward(NeuralNetwork nn, double learning_rate, Pair datas) {
   // Update the output layers
   for (int i = 0; i < nn.layers[output_layer_index].neurons.length; i++) {
     // For each output
-    double output = nn.layers[output_layer_index].neurons[i].value;
-    double target = datas.output_data[i];
-    double derivative = target - output;
-    double delta = (output * (1 - output)) * derivative;
+    final double output = nn.layers[output_layer_index].neurons[i].value;
+    final double target = datas.output_data[i];
+    final double derivative = target - output;
+    final double delta = (output * (1 - output)) * derivative;
     nn.layers[output_layer_index].neurons[i].gradient = delta;
 
     for (int j = 0;
         j < nn.layers[output_layer_index].neurons[i].weights.length;
         j++) {
       // and for each of their weights
-      double previous_output =
+      final double previous_output =
           nn.layers[output_layer_index - 1].neurons[j].value;
-      double error = delta * previous_output;
+      final double error = delta * previous_output;
       nn.layers[output_layer_index].neurons[i].weights_old[j] =
-          nn.layers[output_layer_index].neurons[i].weights[j] -
+          nn.layers[output_layer_index].neurons[i].weights[j] +
               learning_rate * error;
     }
   }
@@ -78,7 +78,7 @@ void backward(NeuralNetwork nn, double learning_rate, Pair datas) {
         double previous_output = nn.layers[i - 1].neurons[k].value;
         double error = delta * previous_output;
         nn.layers[i].neurons[j].weights_old[k] =
-            nn.layers[i].neurons[j].weights[k] - learning_rate * error;
+            nn.layers[i].neurons[j].weights[k] + learning_rate * error;
       }
     }
   }
