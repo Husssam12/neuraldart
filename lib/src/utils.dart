@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 // Random double between min - max
-double randomWeight(int min, int max) {
-  math.Random rand = new math.Random(); 
+double randomWeight(double min, double max) {
+  math.Random rand = new math.Random();
   return rand.nextDouble() * (max - min) + min;
 }
 
@@ -24,7 +24,7 @@ double squaredError(double output, double target) {
 // Used to calculate the overall error rate
 double sumSquaredError(List<double> outputs, List<double> targets) {
   double sum = 0;
-  for(int i = 0; i < outputs.length; i++) {
+  for (int i = 0; i < outputs.length; i++) {
     sum += squaredError(outputs[i], targets[i]);
   }
   return sum;
