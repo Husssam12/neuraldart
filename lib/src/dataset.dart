@@ -5,12 +5,10 @@ class Pair {
   Pair(this.input_data, this.output_data);
 }
 
-class Dataset {
+class DataSet {
   List<Pair> pairs = [];
 
-  // @override
   int getLength() {
-    // Lenght of the data
     return pairs.length;
   }
 }

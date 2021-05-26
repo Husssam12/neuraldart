@@ -1,8 +1,7 @@
 // XOR Example
 import '../lib/neuraldart.dart';
 
-Dataset loadDataset() {
-  // TODO: Make this more generic. / create a get function from yaml etc.
+DataSet loadDataSet() {
   List<double> input1 = [0, 0];
   List<double> input2 = [0, 1];
   List<double> input3 = [1, 0];
@@ -13,18 +12,18 @@ Dataset loadDataset() {
   List<double> expected_output3 = [1];
   List<double> expected_output4 = [0];
 
-  Dataset dataset = new Dataset(); // Empty Dataset
+  DataSet dataSet = new DataSet(); // Empty Dataset
 
-  // Fill dataset with pairs of input and output data
-  dataset.pairs.add(Pair(input1, expected_output1));
-  dataset.pairs.add(Pair(input2, expected_output2));
-  dataset.pairs.add(Pair(input3, expected_output3));
-  dataset.pairs.add(Pair(input4, expected_output4));
+  // Fill dataSet with pairs of input and output data
+  dataSet.pairs.add(Pair(input1, expected_output1));
+  dataSet.pairs.add(Pair(input2, expected_output2));
+  dataSet.pairs.add(Pair(input3, expected_output3));
+  dataSet.pairs.add(Pair(input4, expected_output4));
 
-  return dataset;
+  return dataSet;
 }
 
-final int features = 6;
+final int features = 2;
 
 void main() {
   // Set Min and Max weight value for all neurons
@@ -39,12 +38,12 @@ void main() {
       1, 6); // Output layer / 1 neuron with 6 weights (connections)
 
   // Create the training data
-  Dataset dataset = loadDataset(); // Hard-coded for now.
+  DataSet dataSet = loadDataSet(); // Hard-coded for now.
 
   print("============");
   print("Output before training");
   print("============");
-  for (var i in dataset.pairs) {
+  for (var i in dataSet.pairs) {
     forward(nn, i.input_data);
     print('inputs: ' +
         nn.layers[0].neurons[0].value.toString() +
@@ -53,12 +52,12 @@ void main() {
     print('output: ' + nn.layers[2].neurons[0].value.toString());
   }
 
-  train(nn, dataset, 100000, 0.2);
+  train(nn, dataSet, 100000, 0.2);
 
   print("============");
   print("Output after training");
   print("============");
-  for (var i in dataset.pairs) {
+  for (var i in dataSet.pairs) {
     forward(nn, i.input_data);
     print('inputs: ' +
         nn.layers[0].neurons[0].value.toString() +

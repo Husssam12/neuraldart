@@ -3,15 +3,26 @@ import 'layer.dart';
 import 'neuron.dart';
 import 'utils.dart' as utils;
 
+enum NeuralNetworkType {
+  elman,
+  normal,
+}
+
 class NeuralNetwork {
+  late final NeuralNetworkType _networkType;
   List<Layer> layers = [];
   late int size;
 
   NeuralNetwork(int size) {
+    _networkType = NeuralNetworkType.normal;
     this.size = size;
     for (int i = 0; i < size; i++) {
       layers.add(Layer([]));
     }
+  }
+
+  NeuralNetwork.elman() {
+    _networkType = NeuralNetworkType.elman;
   }
 
   int getSize() {
@@ -29,15 +40,16 @@ void forward(NeuralNetwork nn, List<double> inputs) {
       double sum = 0;
       for (int k = 0; k < nn.layers[i - 1].neurons.length; k++) {
         sum += (nn.layers[i - 1].neurons[k].value *
-                nn.layers[i].neurons[j].weights[k]) -
-            nn.layers[i].neurons[j].bias;
+            nn.layers[i].neurons[j].weights[k]);
       }
+      sum -=
+          (nn.layers[i].neurons[j].bias * nn.layers[i].neurons[j].weights.last);
       nn.layers[i].neurons[j].value = utils.sigmoid(sum);
     }
   }
 }
 
-void backward(NeuralNetwork nn, double learning_rate, Pair datas) {
+void backward(NeuralNetwork nn, double learning_rate, Pair data) {
   int number_layers = nn.layers.length;
   int output_layer_index = number_layers - 1;
 
@@ -45,17 +57,19 @@ void backward(NeuralNetwork nn, double learning_rate, Pair datas) {
   for (int i = 0; i < nn.layers[output_layer_index].neurons.length; i++) {
     // For each output
     final double output = nn.layers[output_layer_index].neurons[i].value;
-    final double target = datas.output_data[i];
-    final double derivative = target - output;
-    final double delta = (output * (1 - output)) * derivative;
+    final double target = data.output_data[i];
+    final double outputError = target - output;
+    final double delta = (output * (1 - output)) * outputError;
     nn.layers[output_layer_index].neurons[i].gradient = delta;
-
     for (int j = 0;
         j < nn.layers[output_layer_index].neurons[i].weights.length;
         j++) {
-      // and for each of their weights
-      final double previous_output =
-          nn.layers[output_layer_index - 1].neurons[j].value;
+      late final double previous_output;
+      if (j < nn.layers[output_layer_index].neurons[i].weights.length - 1) {
+        previous_output = nn.layers[output_layer_index - 1].neurons[j].value;
+      } else {
+        previous_output = nn.layers[output_layer_index].neurons[i].bias;
+      }
       final double error = delta * previous_output;
       nn.layers[output_layer_index].neurons[i].weights_old[j] =
           nn.layers[output_layer_index].neurons[i].weights[j] +
@@ -73,7 +87,7 @@ void backward(NeuralNetwork nn, double learning_rate, Pair datas) {
       double delta = (gradient_sum) * (output * (1 - output));
       nn.layers[i].neurons[j].gradient = delta;
 
-      for (int k = 0; k < nn.layers[i].neurons[j].weights.length; k++) {
+      for (int k = 0; k < nn.layers[i].neurons[j].weights.length - 1; k++) {
         // And for all their weights
         double previous_output = nn.layers[i - 1].neurons[k].value;
         double error = delta * previous_output;
@@ -103,7 +117,7 @@ double sumGradient(NeuralNetwork nn, int n_index, int l_index) {
 }
 
 // This function is used to train
-void train(NeuralNetwork nn, Dataset dt, int iteration, double learning_rate) {
+void train(NeuralNetwork nn, DataSet dt, int iteration, double learning_rate) {
   for (int i = 0; i < iteration; i++) {
     for (int j = 0; j < dt.getLength(); j++) {
       forward(nn, dt.pairs[j].input_data);

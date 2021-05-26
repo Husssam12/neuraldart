@@ -1,7 +1,7 @@
 name: neuraldart
 description: A Dart library for Neural Networks
 version: 1.0.0
-homepage: https://github.com/enesdemirag/neuraldart
+homepage: https://github.com/Husssam12/neuraldart
 
 environment:
   sdk: '>=2.6.0 <3.0.0'
